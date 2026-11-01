@@ -1,0 +1,90 @@
+# Construit l'installeur Windows (InteractivePoll-Setup-x.y.z.exe), le teste en installation
+# silencieuse, puis l'attache à la release GitHub quand on pousse un tag "vX.Y.Z".
+#
+#   git tag v1.0.0 && git push origin v1.0.0
+#
+# Peut aussi être lancé à la main (onglet Actions > « Windows installer » > Run workflow) :
+# l'installeur est alors disponible comme « artifact » du run.
+name: Windows installer
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Node.js embarqué dans l'installeur (version LTS précise, binaire officiel nodejs.org).
+  NODE_VERSION: 22.23.2
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build the web interface
+        run: |
+          npm ci
+          npm run build
+          npm prune --omit=dev
+
+      - name: Stage the files to install
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory stage | Out-Null
+          Copy-Item -Recurse server, dist, images, node_modules stage/
+          Copy-Item package.json, slides.yaml, LICENSE stage/
+          Copy-Item installer/launch-installed.bat stage/Interactive-Poll.bat
+          $zip = "node-v$env:NODE_VERSION-win-x64"
+          Invoke-WebRequest "https://nodejs.org/dist/v$env:NODE_VERSION/$zip.zip" -OutFile node.zip
+          Expand-Archive node.zip node-tmp
+          New-Item -ItemType Directory stage/node | Out-Null
+          Copy-Item "node-tmp/$zip/node.exe" stage/node/
+          Copy-Item "node-tmp/$zip/LICENSE" stage/node/LICENSE-node.txt
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y --no-progress
+
+      - name: Build the installer
+        shell: pwsh
+        run: |
+          $version = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME.TrimStart('v') } else { '0.0.0-dev' }
+          & "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" "/DAppVersion=$version" installer\interactive-poll.iss
+          if ($LASTEXITCODE -ne 0) { throw 'ISCC a échoué' }
+
+      - name: Smoke test (silent install, then the server must answer)
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem release\*.exe | Select-Object -First 1
+          Start-Process $exe.FullName -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/DIR=C:\ip-test' -Wait
+          $server = Start-Process 'C:\ip-test\node\node.exe' -ArgumentList 'server\index.js' `
+            -WorkingDirectory 'C:\ip-test' -PassThru -WindowStyle Hidden
+          Start-Sleep -Seconds 6
+          try {
+            foreach ($path in '/', '/tv', '/images/fond-mer.svg') {
+              $status = (Invoke-WebRequest "http://localhost:3000$path" -UseBasicParsing).StatusCode
+              Write-Host "$path -> $status"
+            }
+            netsh advfirewall firewall show rule name="Interactive Poll"
+          } finally {
+            Stop-Process -Id $server.Id -Force
+          }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: InteractivePoll-Setup
+          path: release/*.exe
+
+      - name: Attach to the GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.exe
+          generate_release_notes: true

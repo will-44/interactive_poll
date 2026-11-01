@@ -1,0 +1,15 @@
+﻿Interactive Poll / Quiz de fête
+
+FR
+- Ce projet a été entièrement « vibe-codé » avec Claude Opus. Il n'a pas été audité.
+- Il n'y a AUCUNE sécurité : pas de mot de passe, pas de chiffrement. La page /admin est ouverte à toute personne qui peut joindre l'ordinateur sur le réseau.
+- À utiliser sur un Wi-Fi local de confiance. Ne jamais l'exposer sur Internet.
+- L'installeur autorise l'application dans le pare-feu Windows pour les réseaux PRIVÉS uniquement. Si votre Wi-Fi est classé « Public » par Windows, passez-le en « Privé » (Paramètres > Réseau et Internet > Wi-Fi > propriétés du réseau).
+- Logiciel fourni sans aucune garantie (licence GNU GPL v3).
+
+EN
+- This project was entirely "vibe-coded" with Claude Opus. It has not been audited.
+- There is NO security: no password, no encryption. The /admin page is open to anyone who can reach this computer on the network.
+- Use it on a trusted local Wi-Fi network. Never expose it to the Internet.
+- The installer allows the app through Windows Firewall for PRIVATE networks only. If Windows classifies your Wi-Fi as "Public", switch it to "Private" (Settings > Network & Internet > Wi-Fi > network properties).
+- Provided with no warranty (GNU GPL v3 license).

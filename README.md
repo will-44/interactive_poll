@@ -26,6 +26,19 @@ Types de slides : contenu, quiz, slider (valeur numérique), avis du public, nua
 
 ## Installation sur Ubuntu / Linux
 
+### Méthode rapide : le script d'installation
+
+```bash
+sudo apt update && sudo apt install -y git
+git clone https://github.com/will-44/interactive_poll.git
+cd interactive_poll
+./install-ubuntu.sh
+```
+
+Le script installe Node.js 22 LTS s'il manque, lance `npm install`, ouvre le port 3000 dans `ufw` **uniquement pour les réseaux locaux** (si `ufw` est actif) et crée un lanceur « Interactive Poll » dans le menu des applications. Ensuite, pour jouer : `./start-ubuntu.sh` (ou le lanceur).
+
+### Méthode manuelle
+
 Il faut **Node.js 18 ou plus récent** (Node 20 ou 22 LTS recommandé) et git.
 
 ```bash
@@ -56,6 +69,23 @@ sudo ufw allow 3000/tcp
 ```
 
 ## Installation sur Windows
+
+### Méthode 1 : l'installeur `.exe` (le plus simple)
+
+1. Téléchargez `InteractivePoll-Setup-x.y.z.exe` depuis la page [Releases](https://github.com/will-44/interactive_poll/releases) du dépôt.
+2. Double-cliquez dessus. Rien à installer avant : Node.js est embarqué. L'installeur configure aussi le pare-feu Windows pour les **réseaux privés**.
+3. Lancez **Interactive Poll** depuis le menu Démarrer (ou le bureau).
+
+Windows affichera un avertissement SmartScreen (« Windows a protégé votre PC »), car l'installeur n'est pas signé : cliquez sur **Informations complémentaires** puis **Exécuter quand même**. Les slides se modifient via le menu Démarrer → *Modifier les slides*. Une mise à jour conserve vos slides et vos images. Si votre Wi-Fi est classé « Public » par Windows, passez-le en « Privé » (Paramètres → Réseau et Internet → Wi-Fi → propriétés du réseau), sinon le pare-feu bloquera les téléphones.
+
+### Méthode 2 : le script d'installation
+
+1. Téléchargez le projet : [ZIP](https://github.com/will-44/interactive_poll/archive/refs/heads/main.zip) à décompresser, ou `git clone`.
+2. Double-cliquez sur **`install-windows.bat`** et acceptez la demande d'autorisation (administrateur).
+
+Le script installe Node.js LTS s'il manque (winget, sinon l'installeur officiel), lance `npm install`, autorise Node.js dans le pare-feu pour les réseaux privés, propose de passer le Wi-Fi en « Privé » s'il est en « Public », et crée un raccourci **Interactive Poll** sur le bureau (il lance `start-windows.bat`).
+
+### Méthode 3 : manuelle
 
 1. Installez **Node.js LTS** depuis <https://nodejs.org> (installeur `.msi`, laissez les options par défaut).
 2. Installez **Git** depuis <https://git-scm.com/download/win> (ou téléchargez le projet en ZIP depuis GitHub : bouton *Code* → *Download ZIP*, puis décompressez-le).
@@ -178,10 +208,22 @@ Fonds fournis : `fond-mer.svg`, `fond-disco.svg`, `fond-chaux.svg`. Vous pouvez 
 
 ## Bon à savoir
 
+- Les scripts `install-windows.*` et `install-ubuntu.sh` sont de simples fichiers texte : relisez-les avant de les lancer, ils demandent les droits administrateur.
 - L'interface est **en français** uniquement.
 - Un invité qui recharge la page ou dont le téléphone se met en veille retrouve sa place et son score.
 - L'état de la partie est sauvegardé en continu dans `data/state.json` : si l'ordinateur plante, relancez `npm start` et la partie reprend où elle en était. Pour repartir de zéro sans l'admin : supprimez ce fichier.
 - Développement : `npm run dev` (rechargement à chaud sur le port 5173, le serveur temps réel reste sur 3000).
+
+## Publier l'installeur Windows (mainteneur)
+
+Le `.exe` est construit par GitHub Actions ([release-windows.yml](.github/workflows/release-windows.yml), script Inno Setup dans [installer/](installer/)). Il est testé automatiquement (installation silencieuse, puis le serveur doit répondre). Pour publier une version :
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Le fichier `InteractivePoll-Setup-1.0.0.exe` apparaît alors dans les Releases. Le workflow peut aussi être lancé à la main depuis l'onglet *Actions*.
 
 ## Licence
 

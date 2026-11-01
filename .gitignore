@@ -8,3 +8,7 @@ images/perso/
 
 .DS_Store
 *.log
+
+# sorties de la construction de l'installeur Windows
+stage/
+release/

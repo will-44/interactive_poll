@@ -28,6 +28,19 @@ Slide types: content, quiz, slider (numeric guess), audience opinion, word cloud
 
 ## Install on Ubuntu / Linux
 
+### Quick way: the install script
+
+```bash
+sudo apt update && sudo apt install -y git
+git clone https://github.com/will-44/interactive_poll.git
+cd interactive_poll
+./install-ubuntu.sh
+```
+
+The script installs Node.js 22 LTS if missing, runs `npm install`, opens port 3000 in `ufw` **for local networks only** (if `ufw` is active) and adds an "Interactive Poll" launcher to the applications menu. To play afterwards: `./start-ubuntu.sh` (or the launcher).
+
+### Manual way
+
 You need **Node.js 18 or newer** (Node 20 or 22 LTS recommended) and git.
 
 ```bash
@@ -58,6 +71,23 @@ sudo ufw allow 3000/tcp
 ```
 
 ## Install on Windows
+
+### Option 1: the `.exe` installer (easiest)
+
+1. Download `InteractivePoll-Setup-x.y.z.exe` from the repository's [Releases](https://github.com/will-44/interactive_poll/releases) page.
+2. Double-click it. Nothing to install beforehand: Node.js is bundled. The installer also configures Windows Firewall for **private networks**.
+3. Start **Interactive Poll** from the Start menu (or the desktop).
+
+Windows will show a SmartScreen warning ("Windows protected your PC") because the installer is not code-signed: click **More info** then **Run anyway**. Edit the slides from Start menu → *Edit the slides*. An update keeps your slides and images. If Windows classifies your Wi-Fi as "Public", switch it to "Private" (Settings → Network & Internet → Wi-Fi → network properties), otherwise the firewall will block the phones.
+
+### Option 2: the install script
+
+1. Get the project: [ZIP](https://github.com/will-44/interactive_poll/archive/refs/heads/main.zip) to unzip, or `git clone`.
+2. Double-click **`install-windows.bat`** and accept the administrator prompt.
+
+The script installs Node.js LTS if missing (winget, otherwise the official installer), runs `npm install`, allows Node.js through the firewall for private networks, offers to switch your Wi-Fi from "Public" to "Private", and creates an **Interactive Poll** shortcut on the desktop (it runs `start-windows.bat`).
+
+### Option 3: manual
 
 1. Install **Node.js LTS** from <https://nodejs.org> (`.msi` installer, keep the default options).
 2. Install **Git** from <https://git-scm.com/download/win> (or download the project as a ZIP from GitHub: *Code* → *Download ZIP*, then unzip it).
@@ -182,9 +212,21 @@ Bundled backgrounds: `fond-mer.svg`, `fond-disco.svg`, `fond-chaux.svg`. You can
 
 ## Good to know
 
+- The `install-windows.*` and `install-ubuntu.sh` scripts are plain text files: read them before running them, they ask for administrator rights.
 - A guest who reloads the page or whose phone goes to sleep gets their spot and score back.
 - Game state is saved continuously in `data/state.json`: if the computer crashes, run `npm start` again and the game resumes where it was. To start from scratch without the admin page: delete that file.
 - Development: `npm run dev` (hot reload on port 5173, the realtime server stays on 3000).
+
+## Publishing the Windows installer (maintainer)
+
+The `.exe` is built by GitHub Actions ([release-windows.yml](.github/workflows/release-windows.yml), Inno Setup script in [installer/](installer/)). It is tested automatically (silent install, then the server must respond). To publish a version:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+`InteractivePoll-Setup-1.0.0.exe` then appears under Releases. The workflow can also be run manually from the *Actions* tab.
 
 ## License
 
