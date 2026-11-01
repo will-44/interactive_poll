@@ -7,10 +7,11 @@ import '@fontsource/nunito/900.css';
 import './styles.css';
 import { Tv } from './tv/Tv.jsx';
 import { Admin } from './admin/Admin.jsx';
+import { Editor } from './editor/Editor.jsx';
 import { Player } from './player/Player.jsx';
 
 const route = window.location.pathname.replace(/\/+$/, '');
-const Page = route === '/tv' ? Tv : route === '/admin' ? Admin : Player;
+const Page = { '/tv': Tv, '/admin': Admin, '/editor': Editor }[route] ?? Player;
 document.body.dataset.page = route.slice(1) || 'player';
 
 createRoot(document.getElementById('root')).render(<Page />);

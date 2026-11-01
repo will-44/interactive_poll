@@ -14,13 +14,13 @@ function imageUrl(rootDir, value, where, errors) {
   return '/' + rel.split(path.sep).join('/');
 }
 
-function readCadre(rootDir, cadre, where, errors) {
+function readCadre(rootDir, cadre, where, errors, imageIssues) {
   if (cadre == null) return null;
   if (typeof cadre !== 'object') {
     errors.push(`${where} : « cadre » doit contenir « image » ou « texte »`);
     return null;
   }
-  if (cadre.image) return { image: imageUrl(rootDir, cadre.image, where, errors) };
+  if (cadre.image) return { image: imageUrl(rootDir, cadre.image, where, imageIssues) };
   if (cadre.texte != null) return { texte: String(cadre.texte) };
   errors.push(`${where} : « cadre » doit contenir « image » ou « texte »`);
   return null;
@@ -56,19 +56,41 @@ function readBool(value, fallback, key, where, errors) {
   return fallback;
 }
 
-export function loadSlides(rootDir, file = 'slides.yaml') {
-  const errors = [];
+// Chemins d'images (« images/x.jpg ») cités par un quiz, sans doublon.
+export function collectImages(doc) {
+  const found = new Set();
+  const add = (v) => {
+    if (v != null && v !== '') found.add(String(v).replace(/^\.?\//, ''));
+  };
+  add(doc?.background);
+  for (const s of Array.isArray(doc?.slides) ? doc.slides : []) {
+    add(s?.background);
+    add(s?.cadre?.image);
+  }
+  return [...found];
+}
+
+export function loadSlides(rootDir, file) {
   let doc;
   try {
     doc = yaml.load(fs.readFileSync(path.resolve(rootDir, file), 'utf8'));
   } catch (e) {
-    return { deck: null, errors: [`Lecture de ${file} impossible : ${e.message}`] };
+    return { deck: null, errors: [`Lecture de ${file} impossible : ${e.message}`], warnings: [] };
   }
+  return parseDoc(rootDir, doc, { label: file });
+}
+
+// Valide un quiz déjà lu (objet YAML) et en tire le « deck » joué par le serveur.
+// lenient : une image introuvable devient un avertissement (import d'un quiz venu d'ailleurs).
+export function parseDoc(rootDir, doc, { label = 'quiz', lenient = false } = {}) {
+  const errors = [];
+  const warnings = [];
+  const imageIssues = lenient ? warnings : errors;
   if (!doc || !Array.isArray(doc.slides)) {
-    return { deck: null, errors: [`${file} : la liste « slides » est manquante`] };
+    return { deck: null, errors: [`${label} : la liste « slides » est manquante`], warnings };
   }
 
-  const background = imageUrl(rootDir, doc.background, 'background global', errors);
+  const background = imageUrl(rootDir, doc.background, 'background global', imageIssues);
   const slides = doc.slides.map((s, i) => {
     const where = `slide ${i + 1}`;
     if (!s || !TYPES.includes(s.type)) {
@@ -77,8 +99,8 @@ export function loadSlides(rootDir, file = 'slides.yaml') {
     }
     const base = {
       type: s.type,
-      background: s.background ? imageUrl(rootDir, s.background, where, errors) : background,
-      cadre: readCadre(rootDir, s.cadre, where, errors),
+      background: s.background ? imageUrl(rootDir, s.background, where, imageIssues) : background,
+      cadre: readCadre(rootDir, s.cadre, where, errors, imageIssues),
     };
 
     if (s.type === 'contenu') {
@@ -156,12 +178,12 @@ export function loadSlides(rootDir, file = 'slides.yaml') {
     return { ...base, question, max_mots: readMaxMots(s.max_mots, 3, where, errors) };
   });
 
-  if (errors.length) return { deck: null, errors };
+  if (errors.length) return { deck: null, errors, warnings };
   const deck = {
     titre: doc.titre != null ? String(doc.titre) : 'Interactive Poll',
     podium_texte: doc.podium_texte != null ? String(doc.podium_texte) : 'Thank you for the music !',
     background,
     slides,
   };
-  return { deck, errors };
+  return { deck, errors, warnings };
 }

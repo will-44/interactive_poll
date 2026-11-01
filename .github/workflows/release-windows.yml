@@ -39,8 +39,8 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory stage | Out-Null
-          Copy-Item -Recurse server, dist, images, node_modules stage/
-          Copy-Item package.json, slides.yaml, LICENSE stage/
+          Copy-Item -Recurse server, dist, images, quizzes, node_modules stage/
+          Copy-Item package.json, LICENSE stage/
           Copy-Item installer/launch-installed.bat stage/Interactive-Poll.bat
           $zip = "node-v$env:NODE_VERSION-win-x64"
           Invoke-WebRequest "https://nodejs.org/dist/v$env:NODE_VERSION/$zip.zip" -OutFile node.zip
@@ -64,11 +64,12 @@ jobs:
         run: |
           $exe = Get-ChildItem release\*.exe | Select-Object -First 1
           Start-Process $exe.FullName -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', '/DIR=C:\ip-test' -Wait
+          $env:NO_BROWSER = '1'
           $server = Start-Process 'C:\ip-test\node\node.exe' -ArgumentList 'server\index.js' `
             -WorkingDirectory 'C:\ip-test' -PassThru -WindowStyle Hidden
           Start-Sleep -Seconds 6
           try {
-            foreach ($path in '/', '/tv', '/images/fond-mer.svg') {
+            foreach ($path in '/', '/tv', '/editor', '/api/quizzes', '/images/fond-mer.svg') {
               $status = (Invoke-WebRequest "http://localhost:3000$path" -UseBasicParsing).StatusCode
               Write-Host "$path -> $status"
             }

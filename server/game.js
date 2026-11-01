@@ -90,6 +90,8 @@ export class Game {
   setDeck(deck) {
     this.deck = deck;
     this.errors = [];
+    // Des slides ont pu être supprimées pendant la partie : on ne reste pas au-delà de la dernière.
+    if (this.index >= deck.slides.length) this.index = deck.slides.length - 1;
     // On oublie l'état des slides qui ont changé de type depuis le dernier chargement.
     // Une réponse corrigée dans le YAML s'applique aux questions pas encore révélées.
     for (const [key, st] of Object.entries(this.slideStates)) {

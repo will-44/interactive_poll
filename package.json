@@ -6,10 +6,11 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n server,vite \"node --watch server/index.js\" \"vite\"",
+    "dev": "concurrently -k -n server,vite \"node --watch server/index.js --no-browser\" \"vite\"",
     "build": "vite build",
     "start": "vite build && node server/index.js",
-    "serve": "node server/index.js"
+    "serve": "node server/index.js",
+    "test": "node --test server/quizzes.test.js server/editor-api.test.js"
   },
   "dependencies": {
     "express": "^4.21.2",

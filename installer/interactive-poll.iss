@@ -40,8 +40,6 @@ french.DesktopIcon=Créer un raccourci sur le bureau
 english.DesktopIcon=Create a desktop shortcut
 french.FirewallStatus=Configuration du pare-feu Windows (réseaux privés)...
 english.FirewallStatus=Configuring Windows Firewall (private networks)...
-french.EditSlides=Modifier les slides (slides.yaml)
-english.EditSlides=Edit the slides (slides.yaml)
 french.ImagesFolder=Dossier des images
 english.ImagesFolder=Images folder
 french.LaunchNow=Lancer Interactive Poll
@@ -51,9 +49,10 @@ english.LaunchNow=Start Interactive Poll
 Name: "desktopicon"; Description: "{cm:DesktopIcon}"
 
 [Dirs]
-; L'utilisateur doit pouvoir modifier slides.yaml, ajouter des images et écrire l'état de la partie.
+; L'utilisateur doit pouvoir enregistrer ses quiz, ajouter des images et écrire l'état de la partie.
 Name: "{app}"; Permissions: users-modify
 Name: "{app}\data"; Permissions: users-modify
+Name: "{app}\quizzes"; Permissions: users-modify
 Name: "{app}\images"; Permissions: users-modify
 
 [Files]
@@ -64,13 +63,17 @@ Source: "..\stage\node_modules\*"; DestDir: "{app}\node_modules"; Flags: ignorev
 Source: "..\stage\package.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\stage\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\stage\Interactive-Poll.bat"; DestDir: "{app}"; Flags: ignoreversion
-; Les slides et images de l'utilisateur ne sont jamais écrasées lors d'une mise à jour.
-Source: "..\stage\slides.yaml"; DestDir: "{app}"; Flags: onlyifdoesntexist uninsneveruninstall
+; Les quiz et images de l'utilisateur ne sont jamais écrasés lors d'une mise à jour.
+Source: "..\stage\quizzes\*"; DestDir: "{app}\quizzes"; Flags: onlyifdoesntexist recursesubdirs uninsneveruninstall
 Source: "..\stage\images\*"; DestDir: "{app}\images"; Flags: onlyifdoesntexist recursesubdirs uninsneveruninstall
+
+[InstallDelete]
+; Anciens raccourcis (avant l'éditeur de quiz) laissés par une version précédente.
+Type: files; Name: "{group}\Modifier les slides (slides.yaml).lnk"
+Type: files; Name: "{group}\Edit the slides (slides.yaml).lnk"
 
 [Icons]
 Name: "{group}\Interactive Poll"; Filename: "{app}\Interactive-Poll.bat"; WorkingDir: "{app}"
-Name: "{group}\{cm:EditSlides}"; Filename: "{win}\notepad.exe"; Parameters: """{app}\slides.yaml"""
 Name: "{group}\{cm:ImagesFolder}"; Filename: "{app}\images"
 Name: "{autodesktop}\Interactive Poll"; Filename: "{app}\Interactive-Poll.bat"; WorkingDir: "{app}"; Tasks: desktopicon
 

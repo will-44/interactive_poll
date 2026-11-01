@@ -80,7 +80,7 @@
 ## 🚀 Pour démarrer : 3 étapes
 
 1. **📥 Installer** le programme sur l'ordinateur branché à la télé *(une fois pour toutes)*.
-2. **✏️ Écrire vos questions** dans un fichier texte.
+2. **✏️ Créer votre quiz** dans l'éditeur (une page web : aucun fichier à toucher).
 3. **▶️ Jouer** : lancer le programme, afficher la télé, scanner le QR code.
 
 ---
@@ -177,12 +177,41 @@ Sans `sudo` : installez Node avec [nvm](https://github.com/nvm-sh/nvm) (`nvm ins
 
 ---
 
-## ✏️ Étape 2 : écrire vos questions
+## ✏️ Étape 2 : créer votre quiz
 
-Toutes les questions sont dans **un simple fichier texte** nommé [`slides.yaml`](slides.yaml). Le fichier fourni est un **exemple complet** (« Les 30 ans d'Alex ») : modifiez-le avec votre propre histoire.
+Au lancement du programme, votre navigateur s'ouvre tout seul sur **l'éditeur de quiz** (sinon : `http://localhost:3000/editor`). Pas de fichier à modifier, pas de code : tout se fait en cliquant.
 
-- **Installeur Windows** : menu Démarrer → Interactive Poll → **Modifier les slides** (ouvre le Bloc-notes). Vos photos vont dans **Dossier des images**.
-- **Autres cas** : ouvrez `slides.yaml` avec n'importe quel éditeur de texte (Bloc-notes, gedit…). Vos photos vont dans le dossier [`images/`](images/).
+<p align="center">
+  <img src="docs/img/editor.png" alt="L'éditeur de quiz : la liste des slides et le formulaire d'une question" width="85%">
+</p>
+
+- **➕ Ajouter une slide** : quiz, slider, avis du public, nuage de mots, demi-cercle ou simple écran de texte.
+- **↑ ↓ ⧉ ✕** : monter, descendre, dupliquer ou supprimer une slide.
+- **🖼️ Photos** : bouton *Choisir…* → *Ajouter une photo* (JPG, PNG, GIF, WebP ou SVG). Les photos d'iPhone au format HEIC sont refusées avec un message : exportez-les en JPG.
+- **✅ Vérification en direct** : une question sans réponse, une image introuvable… l'éditeur vous le dit tout de suite et refuse d'enregistrer tant que ce n'est pas corrigé.
+- **💾 Enregistrer** : une copie de la version précédente est gardée à côté (fichier `.yaml.bak`).
+
+### 📚 Plusieurs quiz
+
+Chaque quiz est un fichier dans le dossier `quizzes/` ; la colonne de gauche de l'éditeur les liste. Le quiz « Les 30 ans d'Alex » est un **exemple complet** : dupliquez-le pour vous en inspirer, ou créez un quiz vide avec **Nouveau quiz**. Vous pouvez aussi **exporter** un quiz (fichier YAML) pour le donner à quelqu'un, ou **importer** celui d'un autre : l'éditeur liste alors les photos à copier dans le dossier `images/`, car elles ne voyagent pas dans le fichier.
+
+> [!WARNING]
+> **« ▶ Lancer ce quiz » démarre une nouvelle partie : la partie en cours est remise à zéro** (joueurs et scores effacés). Un message de confirmation s'affiche avant. Les téléphones déjà connectés se réinscrivent tout seuls.
+>
+> À l'inverse, **« Enregistrer et appliquer »** sur le quiz en cours de jeu met à jour les questions **sans effacer joueurs ni scores** : pratique pour corriger une faute en pleine soirée. En pleine partie, ne corrigez que des textes : n'ajoutez, ne supprimez et ne déplacez pas de slides déjà jouées (les réponses se décaleraient).
+
+<p align="center">
+  <img src="docs/img/editor-launch.png" alt="Confirmation avant de lancer un quiz : la partie en cours sera remise à zéro" width="60%">
+</p>
+
+En haut à droite de l'éditeur : **Réinitialiser la partie** (efface joueurs et scores, sans changer de quiz) et **Arrêter l'application**.
+
+> [!NOTE]
+> L'éditeur n'est accessible **que depuis l'ordinateur qui fait tourner le programme** (`localhost`) : les téléphones des invités ne peuvent pas l'ouvrir. Où sont mes fichiers ? Avec l'installeur Windows : `C:\Program Files\Interactive Poll\quizzes` et `…\images` (raccourci **Dossier des images** dans le menu Démarrer). Sinon : les dossiers `quizzes/` et `images/` du projet. Vos quiz ne sont **pas** envoyés sur GitHub (ils sont ignorés par git), seul l'exemple l'est.
+
+### 🧑‍🎨 Pour les curieux : le fichier d'un quiz
+
+Un quiz est un simple fichier texte (YAML) : vous pouvez aussi le modifier à la main avec le Bloc-notes ou gedit, puis cliquer sur **Recharger le YAML** dans l'admin. Un ancien `slides.yaml` à la racine du programme est repris automatiquement dans `quizzes/` au premier lancement (l'original est renommé `slides.yaml.importe`).
 
 > [!IMPORTANT]
 > Le fichier utilise des **espaces au début des lignes** pour s'organiser. Gardez-les tels quels (pas de touche `Tab`) : en recopiant un bloc existant et en changeant seulement les textes, tout se passe bien.
@@ -253,18 +282,18 @@ slides:
     cible: 70                        # facultatif : 0 = gauche, 100 = droite, sinon au hasard
 ```
 
-- **Photos** : mettez-les dans le dossier des images (idéalement en 16:9). Les photos d'iPhone sont souvent au format **HEIC**, que le navigateur ne sait pas afficher : convertissez-les en JPG d'abord.
+- **Photos** : idéalement en 16:9. Les photos d'iPhone sont souvent au format **HEIC**, que le navigateur ne sait pas afficher : convertissez-les en JPG d'abord.
 - **Fonds fournis** : `fond-mer.svg`, `fond-disco.svg`, `fond-chaux.svg`. Chaque slide peut avoir son propre `background`.
 - **Droits d'auteur** : si vous publiez votre version sur Internet, n'utilisez que des images dont vous avez les droits.
 - **Sans `answer`** : après la fermeture des votes, c'est vous qui choisissez la bonne réponse dans l'admin.
 - **Demi-cercle** : les invités voient la cible sur leur téléphone et écrivent un mot ; la personne fêtée montre sur la télé où elle pense que la cible se trouve. Le premier « Suivante » révèle la cible, le second passe à la suite.
-- Le fichier est abondamment commenté en haut : c'est l'aide intégrée.
-- Pour garder vos vraies questions **hors de git**, mettez-les dans `slides.perso.yaml` (et vos photos dans `images/perso/`), puis lancez avec `SLIDES=slides.perso.yaml npm start` (Windows PowerShell : `$env:SLIDES = "slides.perso.yaml"; npm start`).
+- `quizzes/exemple.yaml` est commenté en haut : c'est l'aide intégrée. Quand l'éditeur enregistre un quiz, il remplace ces commentaires par un court en-tête.
+- Vos quiz (`quizzes/*.yaml`) sont ignorés par git ; vos photos, elles, ne le sont pas : si vous publiez votre copie du projet, ne mettez pas de photos privées dans `images/`.
 
 </details>
 
 > [!TIP]
-> Pendant la fête, après avoir modifié le fichier : bouton **Recharger le YAML** dans l'admin. En cas d'erreur (option manquante, image introuvable…), l'admin l'explique et garde l'ancienne version.
+> Pendant la fête, avec l'éditeur : **Enregistrer et appliquer**, c'est tout. Si vous modifiez le fichier à la main, utilisez le bouton **Recharger le YAML** de l'admin. En cas d'erreur (option manquante, image introuvable…), l'admin l'explique et garde l'ancienne version.
 
 ---
 
@@ -278,18 +307,19 @@ slides:
 | 🪟 **Windows** (script) | Raccourci **Interactive Poll** sur le bureau |
 | 🐧 **Ubuntu** | Menu des applications → **Interactive Poll**, ou `./start-ubuntu.sh` |
 
-Une **fenêtre noire** s'ouvre : c'est normal, elle fait tourner le quiz et affiche les adresses. **Ne la fermez pas pendant la partie.**
+Une **fenêtre noire** s'ouvre : c'est normal, elle fait tourner le quiz et affiche les adresses. **Ne la fermez pas pendant la partie.** Le navigateur s'ouvre en même temps sur l'éditeur : choisissez votre quiz et cliquez sur **▶ Lancer ce quiz**. (Pour ne pas ouvrir le navigateur automatiquement : `NO_BROWSER=1`, ou l'option `--no-browser`.)
 
 > [!IMPORTANT]
 > Connectez **d'abord** l'ordinateur au Wi-Fi de la fête, **puis** lancez le programme : l'adresse du QR code est calculée au démarrage.
 
-### Les trois écrans
+### Les écrans
 
 | Écran | Pour qui | Adresse |
 | --- | --- | --- |
 | 📱 **Invités** | les téléphones des invités (ils scannent le QR code de la télé) | `http://<ip>:3000` |
 | 📺 **Télé** | le navigateur branché sur la télé (plein écran : touche `F11`) | `http://<ip>:3000/tv` |
 | 🎛️ **Admin** | le téléphone de l'animateur | `http://<ip>:3000/admin` |
+| ✏️ **Éditeur** | l'ordinateur du programme **uniquement** | `http://localhost:3000/editor` |
 
 `<ip>` est l'adresse de l'ordinateur ; elle est affichée dans la fenêtre noire. Tout le monde doit être sur le **même Wi-Fi**. Internet n'est pas nécessaire.
 
@@ -299,7 +329,7 @@ Une **fenêtre noire** s'ouvre : c'est normal, elle fait tourner le quiz et affi
 - **Fermer les votes**, puis **Révéler** la bonne réponse.
 - **Points** : 1000 pour une bonne réponse au quiz ; au slider, de 1000 (valeur exacte) à 0 (au-delà de la tolérance). Le podium s'affiche après la dernière slide.
 - **❌ à côté d'un joueur** : le retire de la partie.
-- **Réinitialiser** : efface joueurs et scores (pratique après une répétition).
+- **Réinitialiser** : efface joueurs et scores (pratique après une répétition). Même bouton dans l'éditeur.
 
 ---
 
@@ -317,6 +347,17 @@ Une **fenêtre noire** s'ouvre : c'est normal, elle fait tourner le quiz et affi
   - Linux : `HOST_IP=192.168.1.42 npm start`
   - Windows (PowerShell) : `$env:HOST_IP = "192.168.1.42"; npm start`
 - **Autre port** : `PORT=8080 npm start` (Linux) ou `$env:PORT = 8080; npm start` (Windows).
+
+</details>
+
+<details>
+<summary>✏️ <b>L'éditeur ne s'ouvre pas</b></summary>
+
+<br>
+
+- Ouvrez à la main `http://localhost:3000/editor` **sur l'ordinateur qui fait tourner le programme**. Depuis un autre appareil (téléphone, autre PC), l'éditeur est volontairement refusé.
+- Si un autre port est utilisé (`PORT=8080`), remplacez `3000` par ce port.
+- « Image introuvable » : l'image doit être dans le dossier `images/` ; utilisez *Choisir… → Ajouter une photo* plutôt que de copier le fichier à la main.
 
 </details>
 
@@ -351,9 +392,10 @@ Relancez le programme : la partie reprend où elle en était (l'état est sauveg
 
 <br>
 
-- **Développement** : `npm run dev` (rechargement à chaud sur le port 5173, le serveur temps réel reste sur 3000).
+- **Développement** : `npm run dev` (rechargement à chaud sur le port 5173, le serveur temps réel reste sur 3000). Tests : `npm test`.
+- **Éditeur** : API HTTP `/api/*` ([server/editor-api.js](server/editor-api.js)), réservée à `localhost` (adresse de l'appelant, en-tête `Host`, en-tête `X-Requested-With` sur les écritures) ; stockage des quiz dans [server/quizzes.js](server/quizzes.js).
 - **Technologies** : Node.js, Express, Socket.IO, React, Vite.
-- **Installeur Windows** : le `.exe` est construit par GitHub Actions ([release-windows.yml](.github/workflows/release-windows.yml), script Inno Setup dans [installer/](installer/)) et testé automatiquement (installation silencieuse, puis le serveur doit répondre). Pour publier une version :
+- **Installeur Windows** : le `.exe` est construit par GitHub Actions ([release-windows.yml](.github/workflows/release-windows.yml), script Inno Setup dans [installer/](installer/)) et testé automatiquement (installation silencieuse, puis le serveur et l'éditeur doivent répondre). Pour publier une version :
 
   ```bash
   git tag v1.0.0

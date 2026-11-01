@@ -1,7 +1,11 @@
 # ─────────────────────────────────────────────────────────────────────────────
-#  Interactive Poll — les slides (exemple fictif)
+#  Interactive Poll — quiz d'exemple (fictif)
 #
-#  Après chaque modification : bouton « Recharger le YAML » dans /admin.
+#  Le plus simple : modifier ses quiz dans l'éditeur (page /editor).
+#  Ce fichier peut aussi s'éditer à la main ; après modification, utilise
+#  « Recharger le YAML » dans /admin. Pour faire ton propre quiz, duplique
+#  cet exemple dans l'éditeur plutôt que de le modifier ici : l'éditeur
+#  remplace ces commentaires d'aide par un court en-tête.
 #  Les images vont dans le dossier images/ (jpg, png, svg, webp…).
 #
 #  Types de slides :

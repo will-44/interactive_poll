@@ -46,7 +46,7 @@ export function Admin() {
 
       {state.errors.length > 0 && (
         <div className="a-errors" role="alert">
-          slides.yaml contient des erreurs, l'ancienne version reste active :
+          Le quiz contient des erreurs, l'ancienne version reste active :
           <ul>
             {state.errors.map((e) => (
               <li key={e}>{e}</li>

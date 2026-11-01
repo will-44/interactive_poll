@@ -83,7 +83,7 @@
 ## 🚀 Getting started: 3 steps
 
 1. **📥 Install** the program on the computer connected to the TV *(once and for all)*.
-2. **✏️ Write your questions** in a text file.
+2. **✏️ Create your quiz** in the editor (a web page: no file to touch).
 3. **▶️ Play**: start the program, show the TV page, scan the QR code.
 
 ---
@@ -180,12 +180,41 @@ Without `sudo`: install Node with [nvm](https://github.com/nvm-sh/nvm) (`nvm ins
 
 ---
 
-## ✏️ Step 2: write your questions
+## ✏️ Step 2: create your quiz
 
-All the questions live in **a plain text file** called [`slides.yaml`](slides.yaml). The bundled file is a **complete example** ("Alex's 30th birthday"): edit it with your own story. (The comments inside the file are in French; the keys such as `titre`, `texte`, `gauche`, `droite` must stay as they are.)
+When the program starts, your browser opens by itself on the **quiz editor** (otherwise: `http://localhost:3000/editor`). No file to edit, no code: everything is done by clicking. (The editor itself is in French, like the rest of the app.)
 
-- **Windows installer**: Start menu → Interactive Poll → **Edit the slides** (opens Notepad). Your photos go in **Images folder**.
-- **Other cases**: open `slides.yaml` with any text editor (Notepad, gedit…). Your photos go in the [`images/`](images/) folder.
+<p align="center">
+  <img src="docs/img/editor.png" alt="The quiz editor: the list of slides and the form of one question" width="85%">
+</p>
+
+- **➕ Add a slide** ("Ajouter une slide"): quiz, slider, audience opinion, word cloud, half-circle or a plain text screen.
+- **↑ ↓ ⧉ ✕**: move up, move down, duplicate or delete a slide.
+- **🖼️ Photos**: *Choisir…* (choose) → *Ajouter une photo* (add a photo): JPG, PNG, GIF, WebP or SVG. iPhone HEIC photos are refused with a message: export them as JPG.
+- **✅ Live checking**: a question without answers, a missing image… the editor tells you right away and refuses to save until it is fixed.
+- **💾 Save** ("Enregistrer"): a copy of the previous version is kept next to it (`.yaml.bak` file).
+
+### 📚 Several quizzes
+
+Each quiz is a file in the `quizzes/` folder; the left column of the editor lists them. "Les 30 ans d'Alex" is a **complete example**: duplicate it for inspiration, or create an empty quiz with **Nouveau quiz** (new quiz). You can also **export** a quiz (YAML file) to give it to someone, or **import** someone else's: the editor then lists the photos to copy into the `images/` folder, because photos are not inside the file.
+
+> [!WARNING]
+> **"▶ Lancer ce quiz" (launch this quiz) starts a new game: the current game is reset** (players and scores erased). A confirmation message appears first. Phones that are already connected sign up again by themselves.
+>
+> By contrast, **"Enregistrer et appliquer"** (save and apply) on the quiz being played updates the questions **without erasing players or scores**: handy to fix a typo in the middle of the party. During a game, only fix texts: don't add, remove or move slides that were already played (answers would shift).
+
+<p align="center">
+  <img src="docs/img/editor-launch.png" alt="Confirmation before launching a quiz: the current game will be reset" width="60%">
+</p>
+
+Top right of the editor: **Réinitialiser la partie** (reset the game: erases players and scores, keeps the same quiz) and **Arrêter l'application** (stop the app).
+
+> [!NOTE]
+> The editor can **only be opened from the computer running the program** (`localhost`): the guests' phones cannot open it. Where are my files? With the Windows installer: `C:\Program Files\Interactive Poll\quizzes` and `…\images` (**Images folder** shortcut in the Start menu). Otherwise: the `quizzes/` and `images/` folders of the project. Your quizzes are **not** sent to GitHub (git ignores them), only the example is.
+
+### 🧑‍🎨 For the curious: a quiz file
+
+A quiz is a plain text file (YAML): you can also edit it by hand with Notepad or gedit, then click **Recharger le YAML** (reload YAML) in the admin page. An old `slides.yaml` at the root of the program is imported automatically into `quizzes/` on first launch (the original is renamed `slides.yaml.importe`). The comments in the example file are in French; the keys such as `titre`, `texte`, `gauche`, `droite` must stay as they are.
 
 > [!IMPORTANT]
 > The file uses **spaces at the start of lines** to stay organised. Keep them as they are (no `Tab` key): copying an existing block and only changing the texts works fine.
@@ -256,18 +285,18 @@ slides:
     cible: 70                        # optional: 0 = left, 100 = right, otherwise random
 ```
 
-- **Photos**: put them in the images folder (ideally 16:9). iPhone photos are often **HEIC**, which browsers cannot display: convert them to JPG first.
+- **Photos**: ideally 16:9. iPhone photos are often **HEIC**, which browsers cannot display: convert them to JPG first.
 - **Bundled backgrounds**: `fond-mer.svg`, `fond-disco.svg`, `fond-chaux.svg`. Each slide can have its own `background`.
 - **Copyright**: if you publish your version online, only use images you have the rights to.
 - **Without `answer`**: after closing the votes, you pick the right answer yourself in the admin.
 - **Half-circle**: guests see the target on their phone and type a word; the guest of honour shows on the TV where they think the target is. The first "Suivante" (next) reveals the target, the second moves on.
-- The file is heavily commented at the top: that is the built-in help.
-- To keep your real questions **out of git**, put them in `slides.perso.yaml` (and your photos in `images/perso/`), then start with `SLIDES=slides.perso.yaml npm start` (Windows PowerShell: `$env:SLIDES = "slides.perso.yaml"; npm start`).
+- `quizzes/exemple.yaml` is heavily commented at the top: that is the built-in help. When the editor saves a quiz, it replaces those comments with a short header.
+- Your quizzes (`quizzes/*.yaml`) are ignored by git; your photos are not: if you publish your copy of the project, don't put private photos in `images/`.
 
 </details>
 
 > [!TIP]
-> During the party, after editing the file: use the **Recharger le YAML** (reload YAML) button in the admin page. On error (missing option, image not found…), the admin explains it and keeps the previous version.
+> During the party, with the editor: **Enregistrer et appliquer**, that's all. If you edit the file by hand, use the **Recharger le YAML** (reload YAML) button in the admin page. On error (missing option, image not found…), the admin explains it and keeps the previous version.
 
 ---
 
@@ -281,18 +310,19 @@ slides:
 | 🪟 **Windows** (script) | **Interactive Poll** shortcut on the desktop |
 | 🐧 **Ubuntu** | Applications menu → **Interactive Poll**, or `./start-ubuntu.sh` |
 
-A **black window** opens: that's normal, it runs the quiz and prints the addresses. **Don't close it during the game.**
+A **black window** opens: that's normal, it runs the quiz and prints the addresses. **Don't close it during the game.** The browser opens at the same time on the editor: pick your quiz and click **▶ Lancer ce quiz**. (To stop the browser from opening automatically: `NO_BROWSER=1`, or the `--no-browser` option.)
 
 > [!IMPORTANT]
 > Connect the computer to the party's Wi-Fi **first**, **then** start the program: the QR code's address is computed at startup.
 
-### The three screens
+### The screens
 
 | Screen | For whom | Address |
 | --- | --- | --- |
 | 📱 **Guests** | the guests' phones (they scan the QR code on the TV) | `http://<ip>:3000` |
 | 📺 **TV** | the browser connected to the TV (full screen: `F11` key) | `http://<ip>:3000/tv` |
 | 🎛️ **Admin** | the host's phone | `http://<ip>:3000/admin` |
+| ✏️ **Editor** | the program's computer **only** | `http://localhost:3000/editor` |
 
 `<ip>` is the computer's address; it is printed in the black window. Everyone must be on the **same Wi-Fi**. No Internet needed.
 
@@ -320,6 +350,17 @@ A **black window** opens: that's normal, it runs the quiz and prints the address
   - Linux: `HOST_IP=192.168.1.42 npm start`
   - Windows (PowerShell): `$env:HOST_IP = "192.168.1.42"; npm start`
 - **Different port**: `PORT=8080 npm start` (Linux) or `$env:PORT = 8080; npm start` (Windows).
+
+</details>
+
+<details>
+<summary>✏️ <b>The editor does not open</b></summary>
+
+<br>
+
+- Open `http://localhost:3000/editor` by hand **on the computer running the program**. From another device (phone, other PC) the editor is deliberately refused.
+- If you use another port (`PORT=8080`), replace `3000` with that port.
+- "Image introuvable" (image not found): the image must be in the `images/` folder; use *Choisir… → Ajouter une photo* rather than copying the file by hand.
 
 </details>
 
@@ -353,9 +394,10 @@ Start the program again: the game resumes where it was (state is saved continuou
 
 <br>
 
-- **Development**: `npm run dev` (hot reload on port 5173, the realtime server stays on 3000).
+- **Development**: `npm run dev` (hot reload on port 5173, the realtime server stays on 3000). Tests: `npm test`.
+- **Editor**: HTTP API `/api/*` ([server/editor-api.js](server/editor-api.js)), restricted to `localhost` (caller address, `Host` header, `X-Requested-With` header on writes); quiz storage in [server/quizzes.js](server/quizzes.js).
 - **Stack**: Node.js, Express, Socket.IO, React, Vite.
-- **Windows installer**: the `.exe` is built by GitHub Actions ([release-windows.yml](.github/workflows/release-windows.yml), Inno Setup script in [installer/](installer/)) and tested automatically (silent install, then the server must respond). To publish a version:
+- **Windows installer**: the `.exe` is built by GitHub Actions ([release-windows.yml](.github/workflows/release-windows.yml), Inno Setup script in [installer/](installer/)) and tested automatically (silent install, then the server and the editor must respond). To publish a version:
 
   ```bash
   git tag v1.0.0
