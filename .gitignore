@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+
+# tes vraies slides et photos, si tu veux les garder hors du dépôt
+slides.perso.yaml
+images/perso/
+
+.DS_Store
+*.log

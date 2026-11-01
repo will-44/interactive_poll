@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <rect width="800" height="600" fill="#E3F1DF"/>
+  <circle cx="400" cy="230" r="95" fill="#3E9B54"/>
+  <path d="M170 600 C 170 420 280 360 400 360 S 630 420 630 600 Z" fill="#3E9B54"/>
+  <text x="400" y="560" text-anchor="middle" font-family="sans-serif" font-size="40" font-weight="800" fill="#0B4F8A">Personne C</text>
+</svg>

@@ -1,0 +1,132 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Interactive Poll — les slides (exemple fictif)
+#
+#  Après chaque modification : bouton « Recharger le YAML » dans /admin.
+#  Les images vont dans le dossier images/ (jpg, png, svg, webp…).
+#
+#  Types de slides :
+#    contenu    titre, texte                       (pas de vote)
+#    quiz       question, options (2 à 4), answer  (answer facultatif)
+#               melanger: non → garde l'ordre du YAML (sinon les options
+#               sont mélangées au hasard, le même ordre pour tout le monde)
+#    slider     question, min, max, step, unite, tolerance, answer
+#    avis       question, gauche, droite, min, max, step, unite
+#               (tout facultatif sauf question ; échelle 0 à 10 par défaut)
+#
+#  Avis du public : chaque invité bouge un curseur sur son téléphone, le
+#  curseur de la télé glisse en direct vers la moyenne. Pas de points, pas
+#  de bonne réponse : « Suivante » passe simplement à la slide d'après.
+#    Exemple :
+#      - type: avis
+#        question: "Alex est-elle plutôt Donna ou Sophie ?"
+#        gauche: "Donna"
+#        droite: "Sophie"
+#
+#    wordcloud  question, max_mots                 (3 par défaut, ou « illimité »)
+#
+#  Nuage de mots : les invités envoient un mot à la fois. Avec un nombre,
+#  une jauge leur indique combien il leur en reste ; avec « illimité »,
+#  ils en envoient autant qu'ils veulent. Un même invité ne peut pas
+#  envoyer deux fois le même mot.
+#    demicercle gauche, droite, cible, question, max_mots (1 par défaut)
+#
+#  Jeu du demi-cercle : les invités voient la cible sur leur téléphone et
+#  écrivent un mot (affiché en nuage sur la télé, sans la cible). La personne
+#  fêtée montre sur la télé où elle pense que la cible se trouve. Dans l'admin,
+#  le 1er « Suivante » révèle la cible, le 2e passe à la slide suivante.
+#  cible : 0 = tout à gauche, 100 = tout à droite. Absente → tirée au hasard.
+#  Pas de points sur ce jeu.
+#
+#  Sur toutes les slides (facultatif) :
+#    background: images/fond.jpg        → remplace le fond global
+#    cadre: { image: images/photo.jpg } → photo dans un cadre Polaroïd
+#    cadre: { texte: "Un indice…" }     → texte dans un encadré
+#
+#  answer absent → c'est toi qui choisis / saisis la bonne réponse dans /admin
+#  après avoir fermé les votes.
+#  Slider : 1000 pts pour la valeur exacte, puis de moins en moins,
+#  0 pt au-delà de ± tolerance.
+#  Le podium s'affiche automatiquement après la dernière slide.
+#  podium_texte (en haut du fichier) : la phrase sous « Le podium ».
+#  Absent → « Thank you for the music ! » ; "" → aucune phrase.
+# ─────────────────────────────────────────────────────────────────────────────
+
+titre: "Les 30 ans d'Alex !"
+podium_texte: "Bravo à celle ou celui qui connaît le mieux Alex !"
+background: images/fond-mer.svg
+
+slides:
+  # ── Contenu : accueil, avec une photo dans un cadre Polaroïd ──
+  - type: contenu
+    titre: "Bienvenue !"
+    texte: "Sortez vos téléphones, le quiz commence."
+    cadre: { image: images/exemple-photo.svg }
+
+  # ── Quiz : une seule bonne réponse (1000 points). Sans « answer », tu choisis dans /admin ──
+  - type: quiz
+    question: "Dans quelle ville Alex est-il/elle né(e) ?"
+    options: [Lyon, Nantes, Lille, Rennes]
+    answer: Nantes
+
+  - type: quiz
+    question: "Combien Alex a-t-il/elle de frères et sœurs ?"
+    options: [0, 1, 2, 3]
+    melanger: non                    # garde l'ordre du YAML
+
+  # ── Slider : plus on est proche de la valeur, plus on gagne de points ──
+  - type: slider
+    question: "Combien de pays Alex a-t-il/elle visités ?"
+    min: 0
+    max: 50
+    tolerance: 5                     # 0 point au-delà de ±5
+    unite: pays
+    answer: 12
+    cadre: { texte: "Indice : beaucoup de trains de nuit." }
+
+  - type: slider
+    question: "Combien d'instruments de musique Alex sait-il/elle jouer ?"
+    min: 0
+    max: 10
+    tolerance: 2
+    unite: instruments               # pas d'answer : tu saisis la valeur dans /admin
+    background: images/fond-chaux.svg
+
+  # ── Avis du public : pas de points, la télé affiche la moyenne ──
+  - type: avis
+    question: "Alex est plutôt…"
+    gauche: "Lève-tôt"
+    droite: "Couche-tard"
+
+  # ── Nuage de mots : chacun envoie 1 ou 2 mots ──
+  - type: wordcloud
+    question: "Décris Alex en un mot"
+    max_mots: 2
+
+  # ── Quiz avec images (placeholders à remplacer par tes photos) ──
+  - type: quiz
+    question: "Qui est cette personne ?"
+    options: [Personne A, Personne B, Personne C]
+    answer: Personne B
+    cadre: { image: images/exemple-personne-b.svg }
+
+  # ── Demi-cercle : les invités voient la cible, Alex doit la deviner ──
+  - type: demicercle
+    question: "Un mot pour la cible ! Alex, à toi de trouver"
+    gauche: "Ringard"
+    droite: "Stylé"
+    cible: 70                        # facultatif : 0 = gauche, 100 = droite, sinon au hasard
+
+  - type: demicercle
+    question: "Un mot pour la cible ! Alex, à toi de trouver"
+    gauche: "Qui te détend"
+    droite: "Qui te stresse"
+
+  - type: avis
+    question: "Alex a-t-il/elle le droit d'avoir 30 ans ?"
+    gauche: "Oui"
+    droite: "Non"
+
+  - type: contenu
+    titre: "Joyeux anniversaire !"
+    texte: "Place au gâteau !"
+    background: images/fond-disco.svg
